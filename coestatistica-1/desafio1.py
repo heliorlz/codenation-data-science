@@ -28,7 +28,6 @@ df_final = df.groupby("estado_residencia")[
     "pontuacao_credito"].apply(stats).unstack()
 
 # Precisamos renomear as colunas para ir de acordo com o desafio
-df_final.columns = ["moda", "mediana", "media", "desvio_padrao"]
 print(df_final)
 
 # Fazendo a conversão para .json
