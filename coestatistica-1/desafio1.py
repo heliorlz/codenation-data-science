@@ -19,16 +19,13 @@ df["estado_residencia"].unique()
 
 
 def stats(df):
-    return {"moda": df.mode(), "mediana": df.median(), "media": df.mean(), "desvio_padrao": df.std()}
+    return {"moda": df.mode()[0], "mediana": df.median(), "media": df.mean(), "desvio_padrao": df.std()}
 
 
 # Agrupando para relacionar estado_residencia e pontuacao_credito
-# Aggregate => podemos retornar todos os cálculos de uma só vez utilizando a função aggregate e armazendo em um novo Dataframe
+# Apply => recebe uma função como parâmetro que se aplica para cada valor
 df_final = df.groupby("estado_residencia")[
     "pontuacao_credito"].apply(stats).unstack()
 
-# Precisamos renomear as colunas para ir de acordo com o desafio
-print(df_final)
-
 # Fazendo a conversão para .json
-df_final.to_json("submission.json")
+df_final.to_json("submission.json", orient="index")
