@@ -11,7 +11,7 @@
 
 # ## _Setup_ geral
 
-# In[13]:
+# In[1]:
 
 
 import pandas as pd
@@ -101,17 +101,17 @@ sample_height =  get_sample(athletes, "height", 3000)
 # 
 # Considerando uma amostra de tamanho 3000 da coluna `height` obtida com a função `get_sample()`, execute o teste de normalidade de Shapiro-Wilk com a função `scipy.stats.shapiro()`. Podemos afirmar que as alturas são normalmente distribuídas com base nesse teste (ao nível de significância de 5%)? Responda com um boolean (`True` ou `False`).
 
-# In[7]:
+# In[23]:
 
 
 def q1():
     # Retorne aqui o resultado da questão 1.
-    shapiro_stats, shapiro_p_valor = sct.shapiro(sample_height)
+    shapiro_p_valor = sct.shapiro(sample_height)[1]
 
-    return shapiro_p_valor > 0.05
+    return bool(shapiro_p_valor >= 0.05)
 
 
-# In[8]:
+# In[24]:
 
 
 q1()
@@ -123,14 +123,14 @@ q1()
 # * Plote o qq-plot para essa variável e a analise.
 # * Existe algum nível de significância razoável que nos dê outro resultado no teste? (Não faça isso na prática. Isso é chamado _p-value hacking_, e não é legal).
 
-# In[11]:
+# In[9]:
 
 
 # Histograma
 sns.distplot(sample_height, bins=25)
 
 
-# In[30]:
+# In[10]:
 
 
 # qqplot
@@ -141,20 +141,17 @@ sm.qqplot(sample_height, fit=True, line="45")
 # 
 # Repita o mesmo procedimento acima, mas agora utilizando o teste de normalidade de Jarque-Bera através da função `scipy.stats.jarque_bera()`. Agora podemos afirmar que as alturas são normalmente distribuídas (ao nível de significância de 5%)? Responda com um boolean (`True` ou `False`).
 
-# In[26]:
+# In[25]:
 
 
 def q2():
     # Retorne aqui o resultado da questão 2.
-    jarque_stats, jarque_p_valor = sct.jarque_bera(sample_height)
+    jarque_p_valor = sct.jarque_bera(sample_height)[1]
     
-    if jarque_p_valor > 0.05:
-        return True
-    else:
-        return False
+    return bool(jarque_p_valor >= 0.05)      
 
 
-# In[27]:
+# In[26]:
 
 
 q2()
@@ -168,26 +165,23 @@ q2()
 # 
 # Considerando agora uma amostra de tamanho 3000 da coluna `weight` obtida com a função `get_sample()`. Faça o teste de normalidade de D'Agostino-Pearson utilizando a função `scipy.stats.normaltest()`. Podemos afirmar que os pesos vêm de uma distribuição normal ao nível de significância de 5%? Responda com um boolean (`True` ou `False`).
 
-# In[19]:
+# In[14]:
 
 
 sample_weight = get_sample(athletes, "weight", 3000)
 
 
-# In[28]:
+# In[27]:
 
 
 def q3():
     # Retorne aqui o resultado da questão 3.
     dagostino_stats, dagostino_p_valor = sct.normaltest(sample_weight)
     
-    if dagostino_p_valor > 0.05:
-        return True
-    else:
-        return False
+    return bool(dagostino_p_valor > 0.05)
 
 
-# In[29]:
+# In[28]:
 
 
 q3()
@@ -198,14 +192,14 @@ q3()
 # * Plote o histograma dessa variável (com, por exemplo, `bins=25`). A forma do gráfico e o resultado do teste são condizentes? Por que?
 # * Um _box plot_ também poderia ajudar a entender a resposta.
 
-# In[22]:
+# In[17]:
 
 
 # Histograma sample_weight
 sns.distplot(sample_weight, bins=25)
 
 
-# In[23]:
+# In[18]:
 
 
 # Boxplot sample_weight
@@ -216,26 +210,23 @@ sns.boxplot(sample_weight)
 # 
 # Realize uma transformação logarítmica em na amostra de `weight` da questão 3 e repita o mesmo procedimento. Podemos afirmar a normalidade da variável transformada ao nível de significância de 5%? Responda com um boolean (`True` ou `False`).
 
-# In[31]:
+# In[19]:
 
 
 sample_weight_log = np.log(sample_weight)
 
 
-# In[32]:
+# In[29]:
 
 
 def q4():
     # Retorne aqui o resultado da questão 4.
-    dagostino_stats, dagostino_p_valor = sct.normaltest(sample_weight_log)
+    dagostino_p_valor = sct.normaltest(sample_weight_log)[1]
     
-    if dagostino_p_valor > 0.05:
-        return True
-    else:
-        return False
+    return bool(dagostino_p_valor > 0.05)
 
 
-# In[33]:
+# In[30]:
 
 
 q4()
@@ -246,7 +237,7 @@ q4()
 # * Plote o histograma dessa variável (com, por exemplo, `bins=25`). A forma do gráfico e o resultado do teste são condizentes? Por que?
 # * Você esperava um resultado diferente agora?
 
-# In[34]:
+# In[22]:
 
 
 sns.distplot(sample_weight_log, bins=25)
@@ -258,15 +249,15 @@ sns.distplot(sample_weight_log, bins=25)
 # 
 # Obtenha todos atletas brasileiros, norte-americanos e canadenses em `DataFrame`s chamados `bra`, `usa` e `can`,respectivamente. Realize um teste de hipóteses para comparação das médias das alturas (`height`) para amostras independentes e variâncias diferentes com a função `scipy.stats.ttest_ind()` entre `bra` e `usa`. Podemos afirmar que as médias são estatisticamente iguais? Responda com um boolean (`True` ou `False`).
 
-# In[41]:
+# In[36]:
 
 
-bra = athletes.loc[athletes["nationality"] == "BRA"]
-usa = athletes.loc[athletes["nationality"] == "USA"]
+bra = athletes.query("nationality == 'BRA'") # utilizando query para filtrar
+usa = athletes.query("nationality == 'USA'")
 can = athletes.loc[athletes["nationality"] == "CAN"]
 
 
-# In[67]:
+# In[41]:
 
 
 def q5():
@@ -275,13 +266,13 @@ def q5():
     
     print(ttest_p_valor)
     
-    if ttest_p_valor > 0.05:
+    if ttest_p_valor >= 0.05:
         return True
     else:
         return False
 
 
-# In[68]:
+# In[42]:
 
 
 q5()
@@ -291,7 +282,7 @@ q5()
 # 
 # Repita o procedimento da questão 5, mas agora entre as alturas de `bra` e `can`. Podemos afimar agora que as médias são estatisticamente iguais? Reponda com um boolean (`True` ou `False`).
 
-# In[69]:
+# In[43]:
 
 
 def q6():
@@ -306,7 +297,7 @@ def q6():
         return False
 
 
-# In[70]:
+# In[44]:
 
 
 q6()
@@ -316,17 +307,19 @@ q6()
 # 
 # Repita o procedimento da questão 6, mas agora entre as alturas de `usa` e `can`. Qual o valor do p-valor retornado? Responda como um único escalar arredondado para oito casas decimais.
 
-# In[75]:
+# In[45]:
 
 
 def q7():
     # Retorne aqui o resultado da questão 7.
     ttest_stats, ttest_p_valor = sct.ttest_ind(usa["height"], can["height"], equal_var=False, nan_policy="omit")
     
-    return float(round(ttest_p_valor, 8))
+    ttest_p_valor = float(ttest_p_valor)
+    
+    return round(ttest_p_valor, 8)
 
 
-# In[76]:
+# In[46]:
 
 
 q7()
